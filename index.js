@@ -3,7 +3,22 @@ const fs = require('fs');
 const db = require('./db');
 const log = require('./log');
 
+let lastCollectAll = null;
+
 const main = async () => {
+  setTimeout(main, 300 * 1000);
+  if ((new Date().getHours() >= 9) || (new Date().getHours() <= 17)) {
+    if ((new Date() - lastCollectAll) > 3600 * 1000) { collectAll(); }
+    getSensors('infDev3');
+    getSensors('infDev2');
+    getSensors('infDev4');
+    log('main func if work time');
+  }
+}
+
+const collectAll = async () => {
+  lastCollectAll = new Date();
+  log('start collectAll');
   try {
     const devices = await getState();
     for (let device of devices) {
@@ -12,17 +27,19 @@ const main = async () => {
           await wakeUp(device.iddev);
           setTimeout(() => {
             collectData(device.iddev);
-          }, 300 * 1000);
+          }, 180 * 1000);
         } catch (err) {
           log(err);
         }
       } else if (device.status.event === 'wakeup') {
         collectData(device.iddev);
+        setTImeout(() => {
+          checkStream(device.iddev);
+        }, 10000);
       } else {
         log('unknown state');
       }
     }
-    setTimeout(main, 3600 * 1000);
   } catch (err) {
     log(err);
   }
@@ -38,6 +55,18 @@ const getState = () => {
           devices.push(...JSON.parse(body));
         } catch(e) {}
         resolve(devices);
+      } else {
+        reject(new Error('no valid answer'));
+      }
+    });
+  });
+}
+
+const getStateDev = (devid) => {
+  return new Promise((resolve, reject) => {
+    request(`http://geoworks.pro:3000/${devid}/diag`, (error, resp, body) => {
+      if (resp && resp.statusCode === 200) {
+        resolve(JSON.parse(body));
       } else {
         reject(new Error('no valid answer'));
       }
@@ -101,6 +130,19 @@ const collectData = async (deviceID) => {
   }
   try {
     await getPhoto(deviceID);
+  } catch (err) {
+    log(err);
+  }
+}
+
+const checkStream = async (deviceID) => {
+  try {
+    const { state } = await getStateDev(deviceID);
+    log(`checking stream ${deviceID}`);
+    if (state === "wait") {
+      log(`starting stream ${deviceID}`);
+      request(`http://geoworks.pro:3000/${deviceID}/stream/start`);
+    }
   } catch (err) {
     log(err);
   }
