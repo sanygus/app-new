@@ -33,7 +33,7 @@ const collectAll = async () => {
         }
       } else if (device.status.event === 'wakeup') {
         collectData(device.iddev);
-        setTImeout(() => {
+        setTimeout(() => {
           checkStream(device.iddev);
         }, 10000);
       } else {
