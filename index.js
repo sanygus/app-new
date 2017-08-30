@@ -2,6 +2,7 @@ const request = require('request');
 const fs = require('fs');
 const db = require('./db');
 const log = require('./log');
+const dashConv = require('./dashConv');
 
 let lastCollectAll = null;
 
@@ -142,6 +143,9 @@ const checkStream = async (deviceID) => {
     if (state === "wait") {
       log(`starting stream ${deviceID}`);
       request(`http://geoworks.pro:3000/${deviceID}/stream/start`);
+      if (!dashConv.started(deviceID)) {
+        dashConv.start(deviceID);
+      }
     }
   } catch (err) {
     log(err);
