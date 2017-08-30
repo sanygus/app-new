@@ -8,7 +8,7 @@ let lastCollectAll = null;
 
 const main = async () => {
   setTimeout(main, 300 * 1000);
-  if ((new Date().getHours() >= 9) || (new Date().getHours() <= 17)) {
+  if ((new Date().getHours() >= 9) && (new Date().getHours() <= 17)) {
     if ((new Date() - lastCollectAll) > 3600 * 1000) { collectAll(); }
     getSensors('infDev3');
     getSensors('infDev2');
@@ -34,7 +34,7 @@ const collectAll = async () => {
         }
       } else if (device.status.event === 'wakeup') {
         collectData(device.iddev);
-        setTImeout(() => {
+        setTimeout(() => {
           checkStream(device.iddev);
         }, 10000);
       } else {
