@@ -30,6 +30,7 @@ module.exports.start = (devid) => {
 	});*/
 	p.on('error', (err) => {
 	  log(`Failed to start subprocess ${err}`);//log
+	  processes[devid] = null;
 	});
 
 	p.on('exit', (code/*, signal*/) => {
