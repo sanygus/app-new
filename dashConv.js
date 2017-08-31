@@ -4,6 +4,7 @@ const db = require('./db');
 const streamDir = "../app-new-web/static/stream";
 
 const processes = {};
+spawn('pkill', ['ffmpeg']);
 
 module.exports.start = (devid) => {
 	const p = spawn('ffmpeg', [
