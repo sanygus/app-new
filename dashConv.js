@@ -31,18 +31,28 @@ module.exports.start = (devid) => {
 	p.on('error', (err) => {
 	  log(`Failed to start subprocess ${err}`);//log
 	});
-	p.on('close', (code/*, signal*/) => {
-	  if (code !== 0) {//no stream or kill
-	  	log(`close with code: ${code}`);
-	  }//else {} //stream end
+
+	p.on('exit', (code/*, signal*/) => {
+		switch(code) {
+			case 0:
+				log(`stream stopped on ${devid}`); break;
+			case 1:
+				log(`stream not exist on ${devid}`); break;
+			case 255:
+				log(`stream killed from ${devid}`); break;
+			default:
+				log(`conv exit with code ${code}`); break;
+		}
+		processes[devid] = null;
 	});
+
 	processes[devid] = p;
 }
 
 module.exports.stop = (devid) => {
-	processes[devid].kill();
+	if (processes[devid]) { processes[devid].kill(); }
 }
 
-module.exports.started = (devid) => {//killется ли после системного кила
+module.exports.started = (devid) => {
 	return (processes[devid] && !processes[devid].killed) ? true: false;
 }
