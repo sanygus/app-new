@@ -11,3 +11,11 @@ MongoClient.connect('mongodb://localhost:27017/exapp', function(err, dblink) {
 module.exports.addSensors = (data) => {
   db.collection('sensors').insertOne(data);
 }
+
+module.exports.stream = (devid, date) => {
+  db.collection('stream').updateOne(
+    { devid },
+    { $set: { date } },
+    { upsert: true }
+  );
+}

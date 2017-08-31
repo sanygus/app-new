@@ -1,5 +1,6 @@
 const { spawn } = require('child_process');
 const log = require('./log');
+const db = require('./db');
 const streamDir = "../app-new-web/static/stream";
 
 const processes = {};
@@ -48,10 +49,11 @@ module.exports.start = (devid) => {
 	});
 
 	processes[devid] = p;
+	db.stream(devid, new Date().toJSON());
 }
 
 module.exports.stop = (devid) => {
-	if (processes[devid]) { processes[devid].kill(); }
+	if (processes[devid]) { processes[devid].kill("SIGINT"); }
 }
 
 module.exports.started = (devid) => {

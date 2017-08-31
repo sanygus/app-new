@@ -142,15 +142,13 @@ const checkStream = async (deviceID) => {
     log(`checking stream ${deviceID}`);
     if (state === "wait") {
       log(`starting stream ${deviceID}`);
-      request(`http://geoworks.pro:3000/${deviceID}/stream/start`, () => {
-        if (!dashConv.started(deviceID)) {
+      request(`http://geoworks.pro:3000/${deviceID}/stream/start`, (error, resp, body) => {
+        if ((JSON.parse(body).ok) && (!dashConv.started(deviceID))) {
           dashConv.start(deviceID);
         }
       });
-    } else {
-      if (!dashConv.started(deviceID)) {
-        dashConv.start(deviceID);
-      }
+    } else if ((state === "streaming Video") && (!dashConv.started(deviceID))) {
+      dashConv.start(deviceID);
     }
   } catch (err) {
     log(err);
