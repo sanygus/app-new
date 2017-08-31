@@ -147,6 +147,10 @@ const checkStream = async (deviceID) => {
           dashConv.start(deviceID);
         }
       });
+    } else {
+      if (!dashConv.started(deviceID)) {
+        dashConv.start(deviceID);
+      }
     }
   } catch (err) {
     log(err);
