@@ -75,3 +75,5 @@ setInterval(() => {
 		restart(dev);
 	}
 }, 1800 * 1000);//1/2 hours
+
+module.exports = { start, stop, started };
