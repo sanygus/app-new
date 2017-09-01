@@ -6,7 +6,7 @@ const streamDir = "../app-new-web/static/stream";
 const processes = {};
 spawn('pkill', ['ffmpeg']);
 
-module.exports.start = (devid) => {
+const start = (devid) => {
 	const p = spawn('ffmpeg', [
 		'-i',
 		'rtsp://172.30.0.3' + devid.substring(6) + ':8554/unicast',
@@ -53,10 +53,25 @@ module.exports.start = (devid) => {
 	db.stream(devid, new Date().toJSON());
 }
 
-module.exports.stop = (devid) => {
+const stop = (devid) => {
 	if (processes[devid]) { processes[devid].kill("SIGINT"); }
 }
 
-module.exports.started = (devid) => {
+const started = (devid) => {
 	return (processes[devid] && !processes[devid].killed) ? true: false;
 }
+
+const restart = (devid) => {
+	if (started(devid)) {
+		stop(devid);
+		setTimeout(() => {
+			start(devid);
+		}, 1000);
+	}
+}
+
+setInterval(() => {
+	for (let dev in processes) {
+		restart(dev);
+	}
+}, 1800 * 1000);//1/2 hours
