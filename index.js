@@ -158,7 +158,7 @@ const checkStream = async (deviceID) => {
   }
 }
 
-const onStart = () => {
+const onStart = async () => {
   const devices = await getState();
   const devidarr = [];
   for (let device of devices) {
