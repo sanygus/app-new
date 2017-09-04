@@ -28,6 +28,9 @@ const collectAll = async () => {
           await wakeUp(device.iddev);
           setTimeout(() => {
             collectData(device.iddev);
+            setTimeout(() => {
+              checkStream(device.iddev);
+            }, 10000);
           }, 180 * 1000);
         } catch (err) {
           log(err);
@@ -155,4 +158,16 @@ const checkStream = async (deviceID) => {
   }
 }
 
-main();
+const onStart = () => {
+  const devices = await getState();
+  const devidarr = [];
+  for (let device of devices) {
+    if (device.iddev) {
+      devidarr.push(device.iddev);
+    }
+  }
+  db.resetLive(devidarr);
+  main();
+}
+
+onStart();

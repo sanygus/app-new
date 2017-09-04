@@ -42,15 +42,17 @@ const start = (devid) => {
 			case 1:
 				log(`stream not exist on ${devid}`); break;
 			case 255:
-				log(`stream killed from ${devid}`); break;
+				log(`stream from ${devid} killed`); break;
 			default:
 				log(`conv exit with code ${code}`); break;
 		}
 		processes[devid] = null;
+		db.stream.live(devid, false);
 	});
 
 	processes[devid] = p;
-	db.stream(devid, new Date().toJSON());
+	db.stream.date(devid, new Date().toJSON());
+	db.stream.live(devid, true);
 }
 
 const stop = (devid) => {
