@@ -21,6 +21,11 @@ const start = (devid) => {
 		'-f',
 		'dash',
 		'manifest.mpd'
+		'-strftime',
+		'1'
+		'-vf',
+		'fps=1/600',
+		`../../photos/${devid}/"%F-%H-%M-%S".png`
 	], {
 		cwd: `${streamDir}/${devid}`
 	});

@@ -32,7 +32,6 @@ module.exports.stream = {
 module.exports.resetLive = (devs) => {
   for (let dev of devs) {
     module.exports.stream.live(dev, false);
-    console.log(`reset live for ${dev}`);
   }
 }
 
