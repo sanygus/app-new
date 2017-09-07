@@ -3,6 +3,7 @@ const fs = require('fs');
 const db = require('./db');
 const log = require('./log');
 const dashConv = require('./dashConv');
+const moment = require('moment');
 
 let lastCollectAll = null;
 
@@ -95,7 +96,7 @@ const getPhoto = (deviceID) => {
   return new Promise((resolve, reject) => {
     request(`http://geoworks.pro:3000/${deviceID}/photo`, {encoding: 'binary'}, (error, resp, body) => {
       if (resp.headers['content-type'] === 'image/jpeg') {
-        fs.writeFile(`${__dirname}/photos/${deviceID}/${new Date().toJSON()}.jpg`, body, 'binary', (err) => {
+        fs.writeFile(`${__dirname}/../app-new-web/static/photos/${deviceID}/${moment().format('YYYY-MM-DDTHH-mm')}.jpg`, body, 'binary', (err) => {
           //if (err && err.code === 'ENOENT') { }
           resolve();
         });

@@ -5,6 +5,7 @@
   "main": "index.js",
   "dependencies": {
     "express": "^4.15.3",
+    "moment": "^2.18.1",
     "mongodb": "^2.2.30",
     "request": "^2.81.0"
   },
