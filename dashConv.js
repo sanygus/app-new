@@ -20,12 +20,12 @@ const start = (devid) => {
 		'1',
 		'-f',
 		'dash',
-		'manifest.mpd'
+		'manifest.mpd',
 		'-strftime',
-		'1'
+		'1',
 		'-vf',
 		'fps=1/600',
-		`../../photos/${devid}/"%F-%H-%M-%S".png`
+		`../../photos/${devid}/%F-%H-%M-%S.png`,
 	], {
 		cwd: `${streamDir}/${devid}`
 	});
