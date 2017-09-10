@@ -22,19 +22,19 @@ const collectAll = async () => {
   try {
     const devices = await getState();
     for (let device of devices) {
-      if (device.status.event === 'sleep') {
+      if (!device.up) {
         try {
-          await wakeUp(device.iddev);
+          await wakeUp(device.devid);
           setTimeout(() => {
-            collectData(device.iddev);
+            collectData(device.devid);
           }, 180 * 1000);
         } catch (err) {
           log(err);
         }
-      } else if (device.status.event === 'wakeup') {
-        collectData(device.iddev);
+      } else if (device.up) {
+        collectData(device.devid);
         setTimeout(() => {
-          checkStream(device.iddev);
+          checkStream(device.devid);
         }, 10000);
       } else {
         log('unknown state');
