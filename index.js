@@ -2,6 +2,8 @@ const request = require('request');
 const fs = require('fs');
 const db = require('./db');
 const log = require('./log');
+const dashConv = require('./dashConv');
+const moment = require('moment');
 
 let lastCollectAll = null;
 
@@ -26,7 +28,14 @@ const collectAll = async () => {
         try {
           await wakeUp(device.devid);
           setTimeout(() => {
+<<<<<<< HEAD
             collectData(device.devid);
+=======
+            collectData(device.iddev);
+            setTimeout(() => {
+              checkStream(device.iddev);
+            }, 10000);
+>>>>>>> 35f8f14b888b57e13dc71391e4abffc9375e4914
           }, 180 * 1000);
         } catch (err) {
           log(err);
@@ -91,7 +100,7 @@ const getPhoto = (deviceID) => {
   return new Promise((resolve, reject) => {
     request(`http://geoworks.pro:3000/${deviceID}/photo`, {encoding: 'binary'}, (error, resp, body) => {
       if (resp.headers['content-type'] === 'image/jpeg') {
-        fs.writeFile(`${__dirname}/photos/${deviceID}/${new Date().toJSON()}.jpg`, body, 'binary', (err) => {
+        fs.writeFile(`${__dirname}/../app-new-web/static/photos/${deviceID}/${moment().format('YYYY-MM-DD-HH-mm-ss')}.jpg`, body, 'binary', (err) => {
           //if (err && err.code === 'ENOENT') { }
           resolve();
         });
@@ -141,11 +150,29 @@ const checkStream = async (deviceID) => {
     log(`checking stream ${deviceID}`);
     if (state === "wait") {
       log(`starting stream ${deviceID}`);
-      request(`http://geoworks.pro:3000/${deviceID}/stream/start`);
+      request(`http://geoworks.pro:3000/${deviceID}/stream/start`, (error, resp, body) => {
+        if ((JSON.parse(body).ok) && (!dashConv.started(deviceID))) {
+          dashConv.start(deviceID);
+        }
+      });
+    } else if ((state === "streaming Video") && (!dashConv.started(deviceID))) {
+      dashConv.start(deviceID);
     }
   } catch (err) {
     log(err);
   }
 }
 
-main();
+const onStart = async () => {
+  const devices = await getState();
+  const devidarr = [];
+  for (let device of devices) {
+    if (device.iddev) {
+      devidarr.push(device.iddev);
+    }
+  }
+  db.resetLive(devidarr);
+  main();
+}
+
+onStart();
