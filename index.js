@@ -10,7 +10,7 @@ let lastCollectAll = null;
 const main = async () => {
   setTimeout(main, 300 * 1000);
   if ((new Date().getHours() >= 9) && (new Date().getHours() <= 17)) {
-    if ((new Date() - lastCollectAll) > 3600 * 1000) { collectAll(); }
+    if ((new Date() - lastCollectAll) >= 1200 * 1000) { collectAll(); }
     getSensors('infDev3');
     getSensors('infDev2');
     getSensors('infDev4');
