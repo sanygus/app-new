@@ -28,14 +28,10 @@ const collectAll = async () => {
         try {
           await wakeUp(device.devid);
           setTimeout(() => {
-<<<<<<< HEAD
             collectData(device.devid);
-=======
-            collectData(device.iddev);
             setTimeout(() => {
-              checkStream(device.iddev);
+              checkStream(device.devid);
             }, 10000);
->>>>>>> 35f8f14b888b57e13dc71391e4abffc9375e4914
           }, 180 * 1000);
         } catch (err) {
           log(err);
