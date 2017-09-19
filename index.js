@@ -2,54 +2,38 @@ const request = require('request');
 const fs = require('fs');
 const db = require('./db');
 const log = require('./log');
+const wake = require('./wake');
 const dashConv = require('./dashConv');
 const moment = require('moment');
 
 let lastCollectAll = null;
 
 const main = async () => {
-  setTimeout(main, 300 * 1000);
-  if ((new Date().getHours() >= 9) && (new Date().getHours() <= 17)) {
-    if ((new Date() - lastCollectAll) >= 1200 * 1000) { collectAll(); }
-    getSensors('infDev3');
-    getSensors('infDev2');
-    getSensors('infDev4');
-    log('main func if work time');
-  }
-}
-
-const collectAll = async () => {
-  lastCollectAll = new Date();
-  log('start collectAll');
   try {
     const devices = await getState();
     for (let device of devices) {
-      if (!device.up) {
-        try {
-          await wakeUp(device.devid);
-          setTimeout(() => {
-            collectData(device.devid);
-            setTimeout(() => {
-              checkStream(device.devid);
-            }, 10000);
-          }, 180 * 1000);
-        } catch (err) {
-          log(err);
-        }
-      } else if (device.up) {
-        collectData(device.devid);
-        setTimeout(() => {
-          checkStream(device.devid);
-        }, 10000);
-      } else {
-        log('unknown state');
-      }
+      mainDev(device);
     }
   } catch (err) {
     log(err);
   }
 }
 
+const mainDev = async (dev) => {
+  if (dev.up === null) {
+    console.log('uncertain state');
+  } else if (dev.up) {
+    getData(dev.devid);
+  } else {
+    console.log('try wake');
+    try {
+      await wake(dev.devid);
+      getData(dev.devid);
+    } catch (err) {
+      log(err);
+    }
+  }
+}
 
 const getState = () => {
   return new Promise((resolve, reject) => {
@@ -67,29 +51,18 @@ const getState = () => {
   });
 }
 
-const getStateDev = (devid) => {
-  return new Promise((resolve, reject) => {
-    request(`http://geoworks.pro:3000/${devid}/diag`, (error, resp, body) => {
-      if (resp && resp.statusCode === 200) {
-        resolve(JSON.parse(body));
-      } else {
-        reject(new Error('no valid answer'));
-      }
-    });
-  });
-}
-
-
-const wakeUp = (deviceID) => {
-  return new Promise((resolve, reject) => {
-    request(`http://geoworks.pro:3000/${deviceID}/wakeup`, (error, resp, body) => {
-      if (JSON.parse(body).ok) {
-        resolve();
-      } else {
-        reject(new Error(`wakeup ${deviceID} error`));
-      }
-    });
-  });
+const getData = async (id) => {
+  console.log('try get data');
+  try {
+    await getPhoto(id);
+  } catch (e) {
+    log(e);
+  }
+  try {
+    db.addSensors(await getSensors(id));
+  } catch (e) {
+    log(e);
+  }
 }
 
 const getPhoto = (deviceID) => {
@@ -124,7 +97,7 @@ const getSensors = (deviceID) => {
   });
 }
 
-const collectData = async (deviceID) => {
+/*const collectData = async (deviceID) => {
   try {
     sensors = await getSensors(deviceID);
     sensors.dev = deviceID;
@@ -159,16 +132,29 @@ const checkStream = async (deviceID) => {
   }
 }
 
+const getStateDev = (devid) => {
+  return new Promise((resolve, reject) => {
+    request(`http://geoworks.pro:3000/${devid}/diag`, (error, resp, body) => {
+      if (resp && resp.statusCode === 200) {
+        resolve(JSON.parse(body));
+      } else {
+        reject(new Error('no valid answer'));
+      }
+    });
+  });
+}*/
+
 const onStart = async () => {
-  const devices = await getState();
+  /*const devices = await getState();
   const devidarr = [];
   for (let device of devices) {
     if (device.iddev) {
       devidarr.push(device.iddev);
     }
   }
-  db.resetLive(devidarr);
+  db.resetLive(devidarr);*/
   main();
+  setInterval(main, 3600 * 1000);
 }
 
 onStart();
