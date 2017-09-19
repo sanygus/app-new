@@ -86,6 +86,7 @@ const getSensors = (deviceID) => {
       try {
         const respObj = JSON.parse(body);
         if (respObj.ok && respObj.sensors) {
+          respObj.sensors.devid = deviceID;
           resolve(respObj.sensors);
         } else {
           reject(new Error(`sensors ${deviceID} failure`));
