@@ -18,7 +18,7 @@ module.exports = (id) => {
         let tmr = setInterval(() => {
           TOcount++;
           console.log('wait wake');
-          if (TOcount > 10) {
+          if (TOcount > 300) {
             clearInterval(tmr);
             reject(new Error(`wakeup ${id} timeout`));
           } else if (wakeState[id]) {
