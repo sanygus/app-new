@@ -17,7 +17,7 @@ module.exports = (id) => {
         console.log('body ok');
         let tmr = setInterval(() => {
           TOcount++;
-          console.log('wait wake');
+          console.log(`wait wake ${id} ${TOcount}`);
           if (TOcount > 300) {
             clearInterval(tmr);
             reject(new Error(`wakeup ${id} timeout`));
