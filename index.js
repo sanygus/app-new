@@ -22,6 +22,7 @@ const main = async () => {
 const mainDev = async (dev) => {
   if (dev.up === null) {
     console.log('uncertain state');
+    //try over min
   } else if (dev.up) {
     getData(dev.devid);
   } else {
@@ -69,7 +70,7 @@ const getPhoto = (deviceID) => {
   return new Promise((resolve, reject) => {
     request(`http://geoworks.pro:3000/${deviceID}/photo`, {encoding: 'binary'}, (error, resp, body) => {
       if (resp.headers['content-type'] === 'image/jpeg') {
-        fs.writeFile(`${__dirname}/../app-new-web/static/photos/${deviceID}/${moment().format('YYYY-MM-DD-HH-mm-ss')}.jpg`, body, 'binary', (err) => {
+        fs.writeFile(`${__dirname}/../app-new-web/static/photos/${deviceID}/${moment().format('YYYY-MM-DDTHH-mm-ss')}.jpg`, body, 'binary', (err) => {
           //if (err && err.code === 'ENOENT') { }
           resolve();
         });

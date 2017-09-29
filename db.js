@@ -11,7 +11,7 @@ MongoClient.connect('mongodb://localhost:27017/exapp', function(err, dblink) {
 module.exports.addSensors = (data) => {
   db.collection('sensors').insertOne(data);
 }
-
+/*
 module.exports.stream = {
   date: (devid, date) => {
     db.collection('stream').updateOne(
@@ -34,5 +34,4 @@ module.exports.resetLive = (devs) => {
     module.exports.stream.live(dev, false);
   }
 }
-
-//reset live
+*/
