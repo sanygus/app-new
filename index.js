@@ -7,6 +7,7 @@ const dashConv = require('./dashConv');
 const moment = require('moment');
 
 let lastCollectAll = null;
+const devIgnoreCount = {};
 
 const main = async () => {
   try {
@@ -22,18 +23,27 @@ const main = async () => {
 const mainDev = async (dev) => {
   if (dev.up === null) {
     console.log('uncertain state');
+    devIgnoreCount[dev.devid] = 0;
     //try over min
   } else if (dev.up) {
     getData(dev.devid);
+    devIgnoreCount[dev.devid] = 0;
   } else {
-    console.log('try wake');
-    try {
-      await wake(dev.devid);
-      getData(dev.devid);
-    } catch (err) {
-      log(err);
+    if ((dev.charge >= 0.8) || (devIgnoreCount[dev.devid] >= 6)) {
+      console.log('try wake');
+      try {
+        await wake(dev.devid);
+        getData(dev.devid);
+      } catch (err) {
+        log(err);
+      }
+      devIgnoreCount[dev.devid] = 0;
+    } else {
+      if (devIgnoreCount[dev.devid] === undefined) { devIgnoreCount[dev.devid] = 0; }
+      devIgnoreCount[dev.devid] += 1;
     }
   }
+  console.log(devIgnoreCount[dev.devid]);
 }
 
 const getState = () => {
@@ -64,6 +74,15 @@ const getData = async (id) => {
   } catch (e) {
     log(e);
   }
+  setTimeout(() => {
+    request(`http://geoworks.pro:3000/${id}/nosleep`, (error, resp, body) => {
+      if (resp && resp.statusCode === 200) {
+        console.log('no sleep to ${id} sent!');
+      } else {
+        console.log(`can't sent no sleep to ${id}. body: ${body}`);
+      }
+    });
+  }, 150000);
 }
 
 const getPhoto = (deviceID) => {
@@ -99,64 +118,9 @@ const getSensors = (deviceID) => {
   });
 }
 
-/*const collectData = async (deviceID) => {
-  try {
-    sensors = await getSensors(deviceID);
-    sensors.dev = deviceID;
-    sensors.resDate = new Date().toJSON();
-    db.addSensors(sensors);
-  } catch (err) {
-    log(err);
-  }
-  try {
-    await getPhoto(deviceID);
-  } catch (err) {
-    log(err);
-  }
-}
-
-const checkStream = async (deviceID) => {
-  try {
-    const { state } = await getStateDev(deviceID);
-    log(`checking stream ${deviceID}`);
-    if (state === "wait") {
-      log(`starting stream ${deviceID}`);
-      request(`http://geoworks.pro:3000/${deviceID}/stream/start`, (error, resp, body) => {
-        if ((JSON.parse(body).ok) && (!dashConv.started(deviceID))) {
-          dashConv.start(deviceID);
-        }
-      });
-    } else if ((state === "streaming Video") && (!dashConv.started(deviceID))) {
-      dashConv.start(deviceID);
-    }
-  } catch (err) {
-    log(err);
-  }
-}
-
-const getStateDev = (devid) => {
-  return new Promise((resolve, reject) => {
-    request(`http://geoworks.pro:3000/${devid}/diag`, (error, resp, body) => {
-      if (resp && resp.statusCode === 200) {
-        resolve(JSON.parse(body));
-      } else {
-        reject(new Error('no valid answer'));
-      }
-    });
-  });
-}*/
-
 const onStart = async () => {
-  /*const devices = await getState();
-  const devidarr = [];
-  for (let device of devices) {
-    if (device.iddev) {
-      devidarr.push(device.iddev);
-    }
-  }
-  db.resetLive(devidarr);*/
   main();
-  setInterval(main, 3600 * 1000);
+  setInterval(main, 300 * 1000);
 }
 
 onStart();
