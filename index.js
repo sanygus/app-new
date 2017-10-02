@@ -39,7 +39,7 @@ const mainDev = async (dev) => {
         try {
           await sendNoSleepSig(dev.devid);
           console.log(`sent nosleep sig for ${dev.devid}`);
-        } catch (err) { log(err); }
+        } catch (err) { console.log(err.message); }
       }
       devIgnoreCount[dev.devid] = 0;
     } else {
