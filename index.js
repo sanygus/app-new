@@ -8,6 +8,7 @@ const moment = require('moment');
 
 let lastCollectAll = null;
 const devIgnoreCount = {};
+const lastQueryDev = {};
 
 const main = async () => {
   try {
@@ -21,29 +22,20 @@ const main = async () => {
 }
 
 const mainDev = async (dev) => {
-  if (dev.up === null) {
-    console.log('uncertain state');
-    devIgnoreCount[dev.devid] = 0;
-    //try over min
-  } else if (dev.up) {
-    getData(dev.devid);
-    devIgnoreCount[dev.devid] = 0;
-  } else {
-    if ((dev.charge >= 0.8) || (devIgnoreCount[dev.devid] >= 6)) {
-      console.log('try wake');
+  if (lastQueryDev[dev.devid] === undefined) { lastQueryDev[dev.devid] = null }
+  if ((dev.charge >= 0.8) || (new Date() - lastQueryDev[dev.devid] >= 1800000)) {
+    if (dev.up === null) {
+      console.log('uncertain state');
+    } else if (dev.up) {
+      getData(dev.devid);
+    } else {
       try {
         await wake(dev.devid);
         getData(dev.devid);
-      } catch (err) {
-        log(err);
-      }
-      devIgnoreCount[dev.devid] = 0;
-    } else {
-      if (devIgnoreCount[dev.devid] === undefined) { devIgnoreCount[dev.devid] = 0; }
-      devIgnoreCount[dev.devid] += 1;
+      } catch (err) { log(err); }
     }
+    lastQueryDev[dev.devid] = new Date();
   }
-  console.log(devIgnoreCount[dev.devid]);
 }
 
 const getState = () => {
