@@ -33,7 +33,6 @@ const mainDev = async (dev) => {
         getData(dev.devid);
       } catch (err) { log(err); }
     }
-    lastQueryDev[dev.devid] = new Date();
   }
 }
 
@@ -67,6 +66,7 @@ const getData = async (id) => {
   } catch (e) {
     log(e);
   }
+  lastQueryDev[dev.devid] = new Date();
 }
 
 const getPhoto = (deviceID) => {
