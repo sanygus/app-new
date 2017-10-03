@@ -66,7 +66,7 @@ const getData = async (id) => {
   } catch (e) {
     log(e);
   }
-  lastQueryDev[dev.devid] = new Date();
+  lastQueryDev[id] = new Date();
 }
 
 const getPhoto = (deviceID) => {
