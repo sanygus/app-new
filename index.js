@@ -7,7 +7,6 @@ const dashConv = require('./dashConv');
 const moment = require('moment');
 
 let lastCollectAll = null;
-const devIgnoreCount = {};
 const lastQueryDev = {};
 
 const main = async () => {
@@ -38,6 +37,8 @@ const mainDev = async (dev) => {
   }
 }
 
+
+
 const getState = () => {
   return new Promise((resolve, reject) => {
     request('http://geoworks.pro:3000/state', (error, resp, body) => {
@@ -66,22 +67,13 @@ const getData = async (id) => {
   } catch (e) {
     log(e);
   }
-  setTimeout(() => {
-    request(`http://geoworks.pro:3000/${id}/nosleep`, (error, resp, body) => {
-      if (resp && resp.statusCode === 200) {
-        console.log('no sleep to ${id} sent!');
-      } else {
-        console.log(`can't sent no sleep to ${id}. body: ${body}`);
-      }
-    });
-  }, 150000);
 }
 
 const getPhoto = (deviceID) => {
   return new Promise((resolve, reject) => {
     request(`http://geoworks.pro:3000/${deviceID}/photo`, {encoding: 'binary'}, (error, resp, body) => {
       if (resp.headers['content-type'] === 'image/jpeg') {
-        fs.writeFile(`${__dirname}/../app-new-web/static/photos/${deviceID}/${moment().format('YYYY-MM-DDTHH-mm-ss')}.jpg`, body, 'binary', (err) => {
+        fs.writeFile(`${__dirname}/../app-new-web/static/photos/${deviceID}/${moment().format('YYYY-MM-DDTHH:mm:ss')}.jpg`, body, 'binary', (err) => {
           //if (err && err.code === 'ENOENT') { }
           resolve();
         });
@@ -105,6 +97,18 @@ const getSensors = (deviceID) => {
         }
       } catch (e) {
         reject(new Error('no valid answer'));
+      }
+    });
+  });
+}
+
+const sendNoSleepSig = (devid) => {
+  return new Promise((resolve, reject) => {
+    request(`http://geoworks.pro:3000/${devid}/nosleep`, (error, resp, body) => {
+      if (resp && resp.statusCode === 200) {
+        resolve();
+      } else {
+        reject(new Error(`can't send nsoleep sig for ${devid}`));
       }
     });
   });
