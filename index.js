@@ -35,6 +35,7 @@ const mainDev = async (dev) => {
     }
     if (dev.charge >= 0.8) {
       setTimeout(() => {
+        console.log(`sending NOSLEEP for ${dev.devid}`);
         sendNoSleepSig(dev.devid);
       }, 180000);
     }
