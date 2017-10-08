@@ -37,7 +37,7 @@ const mainDev = async (dev) => {
       setTimeout(() => {
         console.log(`sending NOSLEEP for ${dev.devid}`);
         sendNoSleepSig(dev.devid);
-      }, 180000);
+      }, 240000);
     }
   }
 }
