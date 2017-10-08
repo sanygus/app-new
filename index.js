@@ -33,6 +33,11 @@ const mainDev = async (dev) => {
         getData(dev.devid);
       } catch (err) { log(err); }
     }
+    if (dev.charge >= 0.8) {
+      setTimeout(() => {
+        sendNoSleepSig(dev.devid);
+      }, 180000);
+    }
   }
 }
 
