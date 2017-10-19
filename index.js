@@ -5,6 +5,7 @@ const log = require('./log');
 const wake = require('./wake');
 const dashConv = require('./dashConv');
 const moment = require('moment');
+const sharp = require('sharp');
 
 let lastCollectAll = null;
 const lastQueryDev = {};
@@ -79,9 +80,15 @@ const getPhoto = (deviceID) => {
   return new Promise((resolve, reject) => {
     request(`http://geoworks.pro:3000/${deviceID}/photo`, {encoding: 'binary'}, (error, resp, body) => {
       if (resp.headers['content-type'] === 'image/jpeg') {
-        fs.writeFile(`${__dirname}/../app-new-web/static/photos/${deviceID}/${moment().utc().format('YYYY-MM-DDTHH:mm:ss')}.jpg`, body, 'binary', (err) => {
-          //if (err && err.code === 'ENOENT') { }
-          resolve();
+        const photoName = moment().utc().format('YYYY-MM-DDTHH:mm:ss');
+        const photoPath = `${__dirname}/../app-new-web/static/photos/${deviceID}/${photoName}.jpg`;
+        const thumbPath = `${__dirname}/../app-new-web/static/photos/${deviceID}/thumb/${photoName}.jpg`;
+        fs.writeFile(photoPath, body, 'binary', (err) => {
+          if (err) { reject(err) } else {
+            sharp(photoPath).resize(80).toFile(thumbPath, (err) => {
+              if (err) { reject(err) } else { resolve() }
+            });
+          }
         });
       } else {
         reject(JSON.parse(body).error);
