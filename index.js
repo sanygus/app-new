@@ -79,7 +79,8 @@ const getData = async (id) => {
 const getPhoto = (deviceID) => {
   return new Promise((resolve, reject) => {
     request(`http://geoworks.pro:3000/${deviceID}/photo`, {encoding: 'binary'}, (error, resp, body) => {
-      if (resp.headers['content-type'] === 'image/jpeg') {
+      if (error) { reject(error) }
+      else if (resp.headers['content-type'] === 'image/jpeg') {
         const photoName = moment().utc().format('YYYY-MM-DDTHH:mm:ss');
         const photoPath = `${__dirname}/../app-new-web/static/photos/${deviceID}/${photoName}.jpg`;
         const thumbPath = `${__dirname}/../app-new-web/static/photos/${deviceID}/thumb/${photoName}.jpg`;
