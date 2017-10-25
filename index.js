@@ -105,6 +105,10 @@ const getSensors = (deviceID) => {
         const respObj = JSON.parse(body);
         if (respObj.ok && respObj.sensors) {
           respObj.sensors.devid = deviceID;
+          if (respObj.sensors.date) {
+            respObj.sensors.origDate = respObj.sensors.date;
+            respObj.sensors.date = moment().utc().toJSON();
+          }
           resolve(respObj.sensors);
         } else {
           reject(new Error(`sensors ${deviceID} failure`));
