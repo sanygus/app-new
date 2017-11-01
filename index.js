@@ -23,7 +23,7 @@ const main = async () => {
 
 const mainDev = async (dev) => {
   if (lastQueryDev[dev.devid] === undefined) { lastQueryDev[dev.devid] = null }
-  if ((dev.charge >= 0.8) || (new Date() - lastQueryDev[dev.devid] >= 1800000)) {
+  if ((dev.charge >= 0.8) || (new Date() - lastQueryDev[dev.devid] >= (3600000 * getRarity()))) {
     if (dev.up === null) {
       console.log(`${new Date().toJSON()} uncertain state ${dev.devid}`);
     } else if (dev.up) {
@@ -41,6 +41,13 @@ const mainDev = async (dev) => {
       }, 240000);
     }
   }
+}
+
+const getRarity = () => {
+  let rarity = 1;
+  const h = new Date().getHours();
+  if ((h > 19) || (h < 7)) { rarity = 2; }
+  return rarity;
 }
 
 
