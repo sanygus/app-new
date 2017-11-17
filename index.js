@@ -24,7 +24,8 @@ const main = async () => {
 
 const mainDev = async (dev) => {
   if (lastQueryDev[dev.devid] === undefined) { lastQueryDev[dev.devid] = null }
-  if ((dev.charge >= 0.8) || (new Date() - lastQueryDev[dev.devid] >= (3600000 * getRarity(dev.devid)))) {
+  const r = getRarity(dev.devid);
+  if ((dev.charge >= 0.8) || ((r !== null) && (new Date() - lastQueryDev[dev.devid] >= (3600000 * r)))) {
     if (dev.up === null) {
       console.log(`${new Date().toJSON()} uncertain state ${dev.devid}`);
     } else if (dev.up) {
@@ -48,7 +49,7 @@ const getRarity = (devid) => {
   let night = 0;
   const h = new Date().getHours();
   if ((h > 19) || (h < 7)) { night = 1; }
-  return intervals[devid] && intervals[devid][night] ? intervals[devid][night] : 10000000000;
+  return intervals[devid] && intervals[devid][night] ? intervals[devid][night] : null;
 }
 
 const getState = () => {
