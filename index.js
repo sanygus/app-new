@@ -9,6 +9,7 @@ const sharp = require('sharp');
 
 let lastCollectAll = null;
 const lastQueryDev = {};
+const intervals = { 2: [6, 0], 3: [6, 0], 4: [0, 0] }
 
 const main = async () => {
   try {
@@ -23,7 +24,7 @@ const main = async () => {
 
 const mainDev = async (dev) => {
   if (lastQueryDev[dev.devid] === undefined) { lastQueryDev[dev.devid] = null }
-  if ((dev.charge >= 0.8) || (new Date() - lastQueryDev[dev.devid] >= (3600000 * getRarity()))) {
+  if ((dev.charge >= 0.8) || (new Date() - lastQueryDev[dev.devid] >= (3600000 * getRarity(dev.devid)))) {
     if (dev.up === null) {
       console.log(`${new Date().toJSON()} uncertain state ${dev.devid}`);
     } else if (dev.up) {
@@ -43,14 +44,12 @@ const mainDev = async (dev) => {
   }
 }
 
-const getRarity = () => {
-  let rarity = 1;
+const getRarity = (devid) => {
+  let night = 0;
   const h = new Date().getHours();
-  if ((h > 19) || (h < 7)) { rarity = 2; }
-  return rarity;
+  if ((h > 19) || (h < 7)) { night = 1; }
+  return intervals[devid] && intervals[devid][night] ? intervals[devid][night] : 10000000000;
 }
-
-
 
 const getState = () => {
   return new Promise((resolve, reject) => {
