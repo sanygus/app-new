@@ -9,6 +9,7 @@ const sharp = require('sharp');
 
 let lastCollectAll = null;
 const lastQueryDev = {};
+const intervals = { 2: [6, 0], 3: [6, 0], 4: [0, 0] }
 
 const main = async () => {
   try {
@@ -23,7 +24,8 @@ const main = async () => {
 
 const mainDev = async (dev) => {
   if (lastQueryDev[dev.devid] === undefined) { lastQueryDev[dev.devid] = null }
-  if ((dev.charge >= 0.9) || (new Date() - lastQueryDev[dev.devid] >= 1800000)) {
+  const r = getRarity(dev.devid);
+  if ((dev.charge >= 0.9) || ((r !== null) && (new Date() - lastQueryDev[dev.devid] >= (3600000 * r)))) {
     if (dev.up === null) {
       console.log(`${new Date().toJSON()} uncertain state ${dev.devid}`);
     } else if (dev.up) {
@@ -43,7 +45,12 @@ const mainDev = async (dev) => {
   }
 }
 
-
+const getRarity = (devid) => {
+  let night = 0;
+  const h = new Date().getHours();
+  if ((h > 19) || (h < 7)) { night = 1; }
+  return intervals[devid] && intervals[devid][night] ? intervals[devid][night] : null;
+}
 
 const getState = () => {
   return new Promise((resolve, reject) => {
@@ -105,6 +112,10 @@ const getSensors = (deviceID) => {
         const respObj = JSON.parse(body);
         if (respObj.ok && respObj.sensors) {
           respObj.sensors.devid = deviceID;
+          if (respObj.sensors.date) {
+            respObj.sensors.origDate = respObj.sensors.date;
+            respObj.sensors.date = moment().utc().toJSON();
+          }
           resolve(respObj.sensors);
         } else {
           reject(new Error(`sensors ${deviceID} failure`));
