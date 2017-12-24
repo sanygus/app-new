@@ -23,7 +23,7 @@ const main = async () => {
 
 const mainDev = async (dev) => {
   if (lastQueryDev[dev.devid] === undefined) { lastQueryDev[dev.devid] = null }
-  if ((dev.charge >= 0.8) || (new Date() - lastQueryDev[dev.devid] >= 1800000)) {
+  if ((dev.charge >= 0.9) || (new Date() - lastQueryDev[dev.devid] >= 1800000)) {
     if (dev.up === null) {
       console.log(`${new Date().toJSON()} uncertain state ${dev.devid}`);
     } else if (dev.up) {
