@@ -1,7 +1,7 @@
 const { MongoClient } = require('mongodb');
 let db;
 
-MongoClient.connect('mongodb://localhost:27017/exapp', function(err, dblink) {
+MongoClient.connect('mongodb://sunputer-db:27017/exapp', function(err, dblink) {
   if (err) {
     console.error(err);
   }
