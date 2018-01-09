@@ -12,7 +12,7 @@ module.exports = (id) => {
   return new Promise((resolve, reject) => {
     wakeState[id] = false;
     let TOcount = 0;
-    request(`http://geoworks.pro:3000/${id}/wakeup`, (error, resp, body) => {
+    request(`https://geoworks.pro:3000/${id}/wakeup`, (error, resp, body) => {
       if (JSON.parse(body).ok) {
         console.log('body ok');
         let tmr = setInterval(() => {

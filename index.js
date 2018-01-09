@@ -54,7 +54,7 @@ const getRarity = (devid) => {
 
 const getState = () => {
   return new Promise((resolve, reject) => {
-    request('http://geoworks.pro:3000/state', (error, resp, body) => {
+    request('https://geoworks.pro:3000/state', (error, resp, body) => {
       if (resp && resp.statusCode === 200) {
         const devices = [];
         try {
@@ -85,7 +85,7 @@ const getData = async (id) => {
 
 const getPhoto = (deviceID) => {
   return new Promise((resolve, reject) => {
-    request(`http://geoworks.pro:3000/${deviceID}/photo`, {encoding: 'binary'}, (error, resp, body) => {
+    request(`https://geoworks.pro:3000/${deviceID}/photo`, {encoding: 'binary'}, (error, resp, body) => {
       if (error) { reject(error) }
       else if (resp.headers['content-type'] === 'image/jpeg') {
         const photoName = moment().utc().format('YYYY-MM-DDTHH:mm:ss');
@@ -107,7 +107,7 @@ const getPhoto = (deviceID) => {
 
 const getSensors = (deviceID) => {
   return new Promise((resolve, reject) => {
-    request(`http://geoworks.pro:3000/${deviceID}/sensors`, (error, resp, body) => {
+    request(`https://geoworks.pro:3000/${deviceID}/sensors`, (error, resp, body) => {
       try {
         const respObj = JSON.parse(body);
         if (respObj.ok && respObj.sensors) {
@@ -129,7 +129,7 @@ const getSensors = (deviceID) => {
 
 const sendNoSleepSig = (devid) => {
   return new Promise((resolve, reject) => {
-    request(`http://geoworks.pro:3000/${devid}/nosleep`, (error, resp, body) => {
+    request(`https://geoworks.pro:3000/${devid}/nosleep`, (error, resp, body) => {
       if (resp && resp.statusCode === 200) {
         resolve();
       } else {
