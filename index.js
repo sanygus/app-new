@@ -89,8 +89,8 @@ const getPhoto = (deviceID) => {
       if (error) { reject(error) }
       else if (resp.headers['content-type'] === 'image/jpeg') {
         const photoName = moment().utc().format('YYYY-MM-DDTHH:mm:ss');
-        const photoPath = `${__dirname}/../app-new-web/static/photos/${deviceID}/${photoName}.jpg`;
-        const thumbPath = `${__dirname}/../app-new-web/static/photos/${deviceID}/thumb/${photoName}.jpg`;
+        const photoPath = `${__dirname}/photos/${deviceID}/${photoName}.jpg`;
+        const thumbPath = `${__dirname}/photos/${deviceID}/thumb/${photoName}.jpg`;
         fs.writeFile(photoPath, body, 'binary', (err) => {
           if (err) { reject(err) } else {
             sharp(photoPath).resize(80).toFile(thumbPath, (err) => {
