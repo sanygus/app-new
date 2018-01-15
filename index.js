@@ -7,8 +7,8 @@ const dashConv = require('./dashConv');
 const moment = require('moment');
 const sharp = require('sharp');
 
-const protocol = "https://";
-const host = "geoworks.pro:3004";
+const protocol = "http://";
+const host = "sunputer-back:3000";
 
 let lastCollectAll = null;
 const lastQueryDev = {};
@@ -57,7 +57,7 @@ const getRarity = (devid) => {
 
 const getState = () => {
   return new Promise((resolve, reject) => {
-    request('${protocol}${host}/state', (error, resp, body) => {
+    request(`${protocol}${host}/state`, (error, resp, body) => {
       if (resp && resp.statusCode === 200) {
         const devices = [];
         try {
