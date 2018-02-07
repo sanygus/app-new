@@ -12,7 +12,7 @@ const host = "sunputer-back:3000";
 
 let lastCollectAll = null;
 const lastQueryDev = {};
-const intervals = { 2: [3, 0], 3: [1, 2], 4: [0, 0] }
+const intervals = { 2: [3, 0], 3: [1, 2], 4: [1, 3] }
 
 const main = async () => {
   try {
