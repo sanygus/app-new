@@ -2,12 +2,17 @@ const request = require('request');
 const app = require('express')();
 const wakeState = {};
 
+/* принимает webhook запрос, когда включилось нужное устройство */
 app.get('/waked/:id', (req, res) => {
   wakeState[req.params.id] = true;
   console.log(`waked ${req.params.id}`);
   res.end();
 });
 
+/* возвращает Promise.
+Отправляет запрос на включение устройства, затем ждём (проверяем каждую секунду) прилетел ли запрос webhook (сообщающий о включении нужного устройства).
+Когда устройство проснулось, вызываем resolve.
+Если не проснулось (не прилетел запрос webhook) в течении 300 сек (5 мин), вызываем reject.*/
 module.exports = (id) => {
   return new Promise((resolve, reject) => {
     wakeState[id] = false;
