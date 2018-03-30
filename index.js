@@ -3,7 +3,6 @@ const fs = require('fs');
 const db = require('./db');
 const log = require('./log');
 const wake = require('./wake');
-const dashConv = require('./dashConv');
 const moment = require('moment');
 const sharp = require('sharp');
 
