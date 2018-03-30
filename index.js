@@ -9,6 +9,7 @@ const sharp = require('sharp');
 
 let lastCollectAll = null;
 const lastQueryDev = {};
+/* расписание для каждого устройства. id: [интервал_сбора_даных_в_часах_днём, интервал_сбора_даных_в_часах_ночью] */
 const intervals = { 2: [6, 0], 3: [6, 0], 4: [0, 0] }
 
 const main = async () => {
